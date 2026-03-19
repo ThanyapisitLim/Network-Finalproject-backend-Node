@@ -7,3 +7,9 @@ async function testFetch(): Promise<any> {
     if (error) throw error;
     return data;
 }
+
+async function main() {
+    console.log(await testFetch());
+}
+
+main();
