@@ -7,6 +7,7 @@ import swaggerSpec from './config/swagger';
 import healthRouter from './health';
 import createUserRouter from './routers/create-user';
 import loginRouter from './routers/login';
+import refreshTokenRouter from './routers/refresh-token';
 
 dotenv.config();
 //Setup Express
@@ -24,6 +25,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/health', healthRouter);
 app.use('/create-user', createUserRouter);
 app.use('/login', loginRouter);
+app.use('/refresh-token', refreshTokenRouter);
 
 //Run Server
 app.listen(PORT, () => {

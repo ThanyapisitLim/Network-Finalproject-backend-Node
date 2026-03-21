@@ -13,13 +13,14 @@ router.post('/', async function (req: Request, res: Response, next: NextFunction
             });
         }
         const check = await login(gmail);
+
         if (check.length === 0) {
             return res.status(404).json({
                 error: 'User not found'
             });
         }
         res.status(200).json({
-            message: "login success",
+            message: "Login success",
             data: check
         });
     } catch (error) {

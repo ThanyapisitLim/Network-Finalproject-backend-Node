@@ -14,9 +14,10 @@ router.post('/', async function (req: Request, res: Response, next: NextFunction
             });
         }
         const data = await createUser(name, gmail);
-        const accessToken = generateAccessToken(gmail);
-        const refreshToken = generateRefreshToken(gmail, accessToken);
         const userId = await getUserId(gmail);
+
+        const accessToken = generateAccessToken(userId[0].user_id);
+        const refreshToken = generateRefreshToken(userId[0].user_id, accessToken);
         await storeToken(userId[0].user_id, refreshToken);
 
         res.status(201).json({
