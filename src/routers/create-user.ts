@@ -1,6 +1,6 @@
 import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
-import { createUser, getUserId } from '../controllers/user';
+import { checkExistingGmail, createUser, getUserId } from '../controllers/user';
 import { generateAccessToken, generateRefreshToken, storeToken } from '../controllers/token';
 
 const router = express.Router();
@@ -11,6 +11,12 @@ router.post('/', async function (req: Request, res: Response, next: NextFunction
         if (!name || !gmail) {
             return res.status(400).json({
                 error: 'Name and Gmail are required'
+            });
+        }
+        const existingGmail = await checkExistingGmail(gmail);
+        if (existingGmail.length > 0) {
+            return res.status(400).json({
+                error: 'Gmail already exists'
             });
         }
         const data = await createUser(name, gmail);

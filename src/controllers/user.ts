@@ -26,3 +26,12 @@ export async function getUserId(gmail: string) {
     if (error) throw error;
     return data;
 }
+
+export async function checkExistingGmail(gmail: string) {
+    const { data, error } = await supabase
+        .from('users')
+        .select()
+        .eq('gmail', gmail);
+    if (error) throw error;
+    return data;
+}
