@@ -8,3 +8,12 @@ export async function createUser(name: string, gmail: string) {
     if (error) throw error;
     return data;
 }
+
+export async function login(gmail: string) {
+    const { data, error } = await supabase
+        .from('users')
+        .select()
+        .eq('gmail', gmail);
+    if (error) throw error;
+    return data;
+}

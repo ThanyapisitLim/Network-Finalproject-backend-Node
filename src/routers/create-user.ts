@@ -61,7 +61,7 @@ router.post('/', async function (req: Request, res: Response, next: NextFunction
         const { name, gmail } = req.body;
         if (!name || !gmail) {
             return res.status(400).json({
-                error: 'Name and email are required'
+                error: 'Name and Gmail are required'
             });
         }
 
