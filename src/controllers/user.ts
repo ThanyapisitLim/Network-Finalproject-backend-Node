@@ -1,15 +1,10 @@
 import supabase from "../config/supabase.js";
 
-async function testFetch(): Promise<any> {
+export async function createUser(name: string, gmail: string) {
     const { data, error } = await supabase
         .from('users')
-        .select('*');
+        .insert([{ name, gmail }])
+        .select();
     if (error) throw error;
     return data;
 }
-
-async function main() {
-    console.log(await testFetch());
-}
-
-main();
