@@ -17,3 +17,12 @@ export async function login(gmail: string) {
     if (error) throw error;
     return data;
 }
+
+export async function getUserId(gmail: string) {
+    const { data, error } = await supabase
+        .from('users')
+        .select('user_id')
+        .eq('gmail', gmail);
+    if (error) throw error;
+    return data;
+}
