@@ -35,3 +35,12 @@ export async function checkExistingGmail(gmail: string) {
     if (error) throw error;
     return data;
 }
+
+export async function getUserByUserId(userId: string) {
+    const { data, error } = await supabase
+        .from('users')
+        .select()
+        .eq('user_id', userId);
+    if (error) throw error;
+    return data;
+}

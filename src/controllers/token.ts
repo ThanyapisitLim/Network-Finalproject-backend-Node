@@ -13,8 +13,15 @@ export function generateRefreshToken(userId: string, accessToken: string) {
     return token;
 }
 
-export function decodedToken(token: string) {
-    return jwt.verify(token, process.env.JWT_SECRET!);
+interface DecodedToken {
+    userId: string;
+    accessToken?: string;
+    iat?: number;
+    exp?: number;
+}
+
+export function decodedToken(token: string): DecodedToken {
+    return jwt.verify(token, process.env.JWT_SECRET!) as DecodedToken;
 }
 
 export async function storeToken(userId: string, refreshToken: string) {

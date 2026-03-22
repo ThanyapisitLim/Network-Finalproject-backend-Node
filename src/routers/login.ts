@@ -23,16 +23,10 @@ router.post('/', async function (req: Request, res: Response, next: NextFunction
             });
         }
 
-        res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict",
-            maxAge: 1000 * 60 * 60,
-        });
-
         res.status(200).json({
             message: "Login success",
-            data: check
+            data: check,
+            accessToken: accessToken
         });
     } catch (error) {
         next(error);
