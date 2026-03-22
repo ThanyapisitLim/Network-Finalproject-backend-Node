@@ -26,6 +26,13 @@ router.post('/', async function (req: Request, res: Response, next: NextFunction
         const refreshToken = generateRefreshToken(userId[0].user_id, accessToken);
         await storeToken(userId[0].user_id, refreshToken);
 
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 1000 * 60 * 60,
+        });
+        console.log("access token :", accessToken)
         res.status(201).json({
             message: "create user success",
             data,

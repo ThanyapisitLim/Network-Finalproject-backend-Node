@@ -8,6 +8,7 @@ import healthRouter from './health';
 import createUserRouter from './routers/create-user';
 import loginRouter from './routers/login';
 import refreshTokenRouter from './routers/refresh-token';
+import checkGmailRouter from './routers/check-gmail';
 
 dotenv.config();
 //Setup Express
@@ -15,8 +16,13 @@ const app: Application = express();
 const PORT = process.env.PORT;
 
 //Setup Environment
-app.use(cors());
 app.use(express.json());
+app.use(
+    cors({
+        origin: "http://localhost:3000",
+        credentials: true,
+    })
+);
 
 //Swagger API Docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -26,6 +32,7 @@ app.use('/health', healthRouter);
 app.use('/create-user', createUserRouter);
 app.use('/login', loginRouter);
 app.use('/refresh-token', refreshTokenRouter);
+app.use('/check-gmail', checkGmailRouter);
 
 //Run Server
 app.listen(PORT, () => {
