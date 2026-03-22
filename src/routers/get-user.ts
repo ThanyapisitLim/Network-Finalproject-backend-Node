@@ -14,8 +14,7 @@ router.get('/', async function (req: Request, res: Response, next: NextFunction)
         }
         const userId = decodedToken(accessToken);
         const user = await getUserByUserId(userId.userId);
-
-        res.send(user)
+        res.json(user)
     } catch (error) {
         console.error('Error fetching user:', error);
         res.status(500).json({ error: 'Internal server error' });
