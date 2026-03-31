@@ -2,6 +2,7 @@ import express from 'express';
 import type { Request, Response, Application } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
 import healthRouter from './health';
@@ -18,6 +19,7 @@ const PORT = process.env.PORT;
 
 //Setup Environment
 app.use(express.json());
+app.use(morgan('dev'));
 app.use(
     cors({
         origin: "http://localhost:3000",
