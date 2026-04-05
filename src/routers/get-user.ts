@@ -1,24 +1,14 @@
-import express from 'express';
-import type { Request, Response, NextFunction } from 'express';
-import { decodedToken } from '../controllers/token';
-import { getUserByUserId } from '../controllers/user';
+import express from "express";
+import { verifyToken, AuthRequest } from "../middleware/verifyToken";
+import { getUserByUserId } from "../controllers/user";
+
 const router = express.Router();
 
-router.get('/', async function (req: Request, res: Response, next: NextFunction) {
-    try {
-        const accessToken = req.headers.authorization?.split(" ")[1];
-        if (!accessToken) {
-            return res.status(401).json({
-                error: 'Unauthorized'
-            });
-        }
-        const userId = decodedToken(accessToken);
-        const user = await getUserByUserId(userId.userId);
-        res.json(user)
-    } catch (error) {
-        console.error('Error fetching user:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+router.get("/", verifyToken, async (req: AuthRequest, res) => {
+
+    const user = await getUserByUserId(req.user!.userId);
+
+    res.json(user);
 
 });
 

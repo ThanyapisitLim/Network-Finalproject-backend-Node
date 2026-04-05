@@ -1,4 +1,5 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import type { Request, Response, Application } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -11,6 +12,7 @@ import loginRouter from './routers/login';
 import refreshTokenRouter from './routers/refresh-token';
 import checkGmailRouter from './routers/check-gmail';
 import getUserRouter from './routers/get-user';
+import logoutRouter from './routers/logout';
 
 dotenv.config();
 //Setup Express
@@ -19,6 +21,7 @@ const PORT = process.env.PORT;
 
 //Setup Environment
 app.use(express.json());
+app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(
     cors({
@@ -36,6 +39,7 @@ app.use('/create-user', createUserRouter);
 app.use('/login', loginRouter);
 app.use('/refresh-token', refreshTokenRouter);
 app.use('/check-gmail', checkGmailRouter);
+app.use('/logout', logoutRouter);
 app.use('/get-user', getUserRouter);
 
 //Run Server

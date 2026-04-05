@@ -24,6 +24,16 @@ export function decodedToken(token: string): DecodedToken {
     return jwt.verify(token, process.env.JWT_SECRET!) as DecodedToken;
 }
 
+export async function deleteRefreshToken(refreshToken: string) {
+    const { data, error } = await supabase
+        .from('auth_token')
+        .delete()
+        .eq('refresh_token', refreshToken);
+    console.log(refreshToken)
+    if (error) throw error;
+    return data;
+}
+
 export async function storeToken(userId: string, refreshToken: string) {
     const { data, error } = await supabase
         .from('auth_token')
