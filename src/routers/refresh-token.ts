@@ -6,10 +6,11 @@ const router = express.Router();
 
 router.post('/', async function (req: Request, res: Response, next: NextFunction) {
     try {
-        const { refreshToken } = req.body;
+        // Read refresh token from HttpOnly cookie
+        const refreshToken = req.cookies?.refreshToken;
         if (!refreshToken) {
-            return res.status(400).json({
-                error: 'Refresh token is required'
+            return res.status(401).json({
+                error: 'No refresh token'
             });
         }
 
@@ -29,6 +30,14 @@ router.post('/', async function (req: Request, res: Response, next: NextFunction
         const newAccessToken = generateAccessToken(decoded.userId);
         const newRefreshToken = generateRefreshToken(decoded.userId, newAccessToken);
         await updateToken(refreshToken, newRefreshToken);
+
+        // Update the refresh token cookie
+        res.cookie("refreshToken", newRefreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+        });
 
         res.status(200).json({
             message: 'Token refreshed successfully',
