@@ -13,6 +13,7 @@ import refreshTokenRouter from './routers/refresh-token';
 import checkGmailRouter from './routers/check-gmail';
 import getUserRouter from './routers/get-user';
 import logoutRouter from './routers/logout';
+import messageRouter from './routers/message';
 
 dotenv.config();
 //Setup Express
@@ -41,6 +42,7 @@ app.use('/refresh-token', refreshTokenRouter);
 app.use('/check-gmail', checkGmailRouter);
 app.use('/logout', logoutRouter);
 app.use('/get-user', getUserRouter);
+app.use('/message', messageRouter);
 
 //Run Server
 app.listen(PORT, () => {
