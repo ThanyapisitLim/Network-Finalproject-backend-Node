@@ -18,7 +18,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     try {
 
-        const { name, gmail } = req.body;
+        const { name, gmail, status, interest } = req.body;
 
         // validate input
         if (!name || !gmail) {
@@ -37,7 +37,7 @@ router.post("/", async (req: Request, res: Response) => {
         }
 
         // create user
-        const newUser = await createUser(name, gmail);
+        const newUser = await createUser(name, gmail, status, interest);
 
         // get userId
         const user = await getUserId(gmail);

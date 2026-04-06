@@ -1,9 +1,9 @@
 import supabase from "../config/supabase.js";
 
-export async function createUser(name: string, gmail: string) {
+export async function createUser(name: string, gmail: string, status: string, interest: string) {
     const { data, error } = await supabase
         .from('users')
-        .insert([{ name, gmail }])
+        .insert([{ name, gmail, status, interest }])
         .select();
     if (error) throw error;
     return data;
