@@ -7,6 +7,7 @@ import {
     createGroup,
     deleteGroupById
 } from "../controllers/message";
+import redisClient from "../config/redis";
 
 const router = express.Router();
 
@@ -50,6 +51,9 @@ router.post("/chat", verifyToken, async (req: AuthRequest, res) => {
         //Save คำตอบ AI
         const assistantMessage = await createMessage(userId, "assistant", answer, finalGroupId);
 
+        // --- เพิ่ม Redis: ลบ Cache เมื่อมีการสร้างข้อความใหม่ ---
+        await redisClient.del(`messages:${userId}`);
+
         return res.status(200).json({
             question: question,
             answer: answer,
@@ -79,6 +83,9 @@ router.post("/", verifyToken, async (req: AuthRequest, res) => {
 
         const message = await createMessage(userId, role, context);
 
+        // --- เพิ่ม Redis: ลบ Cache เมื่อมีการสร้างข้อความใหม่ ---
+        await redisClient.del(`messages:${userId}`);
+
         return res.status(201).json({
             message: "Message saved successfully",
             data: message
@@ -96,8 +103,26 @@ router.post("/", verifyToken, async (req: AuthRequest, res) => {
 router.get("/", verifyToken, async (req: AuthRequest, res) => {
     try {
         const userId = req.user!.userId;
+        const cacheKey = `messages:${userId}`;
 
+        // 1. ลองเช็คใน Cache ก่อน
+        const cachedMessages = await redisClient.get(cacheKey);
+
+        if (cachedMessages) {
+            console.log("🟢 ดึงข้อมูล Messages จาก Redis Cache");
+            return res.status(200).json({
+                data: JSON.parse(cachedMessages)
+            });
+        }
+
+        // 2. ถ้าไม่มีใน Cache ให้ดึงจาก Database
+        console.log("🔴 ดึงข้อมูล Messages จาก Database");
         const messages = await getMessagesByUserId(userId);
+
+        // 3. เอาข้อมูลไปเก็บลง Cache ให้หมดอายุใน 1 ชั่วโมง
+        if (messages) {
+            await redisClient.setEx(cacheKey, 3600, JSON.stringify(messages));
+        }
 
         return res.status(200).json({
             data: messages
@@ -118,6 +143,9 @@ router.delete("/", verifyToken, async (req: AuthRequest, res) => {
 
         await deleteMessagesByUserId(userId);
 
+        // --- เพิ่ม Redis: ลบ Cache เมื่อมีการลบข้อความ ---
+        await redisClient.del(`messages:${userId}`);
+
         return res.status(200).json({
             message: "Chat history cleared successfully"
         });
@@ -133,13 +161,18 @@ router.delete("/", verifyToken, async (req: AuthRequest, res) => {
 //ตอนลบ Group
 router.delete("/group/:groupId", verifyToken, async (req: AuthRequest, res) => {
     try {
+        const userId = req.user!.userId;
         const groupId = req.params.groupId as string;
+        
         if (!groupId) {
             return res.status(400).json({ error: "Group ID is required" });
         }
 
         const id = parseInt(groupId, 10);
         await deleteGroupById(id);
+
+        // --- เพิ่ม Redis: ลบ Cache เมื่อมีการลบข้อมูลกลุ่มและข้อความ ---
+        await redisClient.del(`messages:${userId}`);
 
         return res.status(200).json({
             message: "Group and its messages deleted successfully"
