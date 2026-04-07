@@ -10,7 +10,7 @@ import {
 
 const router = express.Router();
 
-
+//ตอน Chat
 router.post("/chat", verifyToken, async (req: AuthRequest, res) => {
     try {
         const { question, groupId } = req.body;
@@ -22,17 +22,16 @@ router.post("/chat", verifyToken, async (req: AuthRequest, res) => {
         const userId = req.user!.userId;
         let finalGroupId = groupId ? parseInt(groupId, 10) : null;
 
-        // If no groupId was provided, we create a new group FIRST
         if (!finalGroupId) {
             const groupName = question.length > 40 ? question.slice(0, 40) + "..." : question;
             const newGroup = await createGroup(groupName);
             finalGroupId = newGroup.group_id as number;
         }
 
-        // 1. Save user question
+        //เก็บ Message
         const userMessage = await createMessage(userId, "user", question, finalGroupId);
 
-        // 2. Ask AI
+        //ถาม AI
         const AI_API_URL = process.env.AI_API_URL || "http://localhost:8080";
         const aiResponse = await fetch(`${AI_API_URL}/ask`, {
             method: "POST",
@@ -48,7 +47,7 @@ router.post("/chat", verifyToken, async (req: AuthRequest, res) => {
         const aiData = await aiResponse.json();
         const answer = aiData.answer;
 
-        // 3. Save AI answer
+        //Save คำตอบ AI
         const assistantMessage = await createMessage(userId, "assistant", answer, finalGroupId);
 
         return res.status(200).json({
@@ -65,6 +64,7 @@ router.post("/chat", verifyToken, async (req: AuthRequest, res) => {
     }
 });
 
+//ตอนสร้าง Group
 router.post("/", verifyToken, async (req: AuthRequest, res) => {
     try {
         const { role, context } = req.body;
@@ -92,7 +92,7 @@ router.post("/", verifyToken, async (req: AuthRequest, res) => {
     }
 });
 
-
+//ตอนดึงข้อมูล
 router.get("/", verifyToken, async (req: AuthRequest, res) => {
     try {
         const userId = req.user!.userId;
@@ -111,7 +111,7 @@ router.get("/", verifyToken, async (req: AuthRequest, res) => {
     }
 });
 
-
+//ตอนลบข้อมูล
 router.delete("/", verifyToken, async (req: AuthRequest, res) => {
     try {
         const userId = req.user!.userId;
@@ -130,6 +130,7 @@ router.delete("/", verifyToken, async (req: AuthRequest, res) => {
     }
 });
 
+//ตอนลบ Group
 router.delete("/group/:groupId", verifyToken, async (req: AuthRequest, res) => {
     try {
         const groupId = req.params.groupId as string;
