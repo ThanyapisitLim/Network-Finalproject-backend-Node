@@ -1,6 +1,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import type { Request, Response, Application } from 'express';
+import { connectRedis } from './config/redis';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -45,7 +46,9 @@ app.use('/get-user', getUserRouter);
 app.use('/message', messageRouter);
 
 //Run Server
-app.listen(PORT, () => {
-    console.log(`🚀 Server is running at http://localhost:${PORT}`);
-    console.log(`📚 Swagger docs available at http://localhost:${PORT}/api-docs`);
+connectRedis().then(() => {
+    app.listen(PORT, () => {
+        console.log(`🚀 Server is running at http://localhost:${PORT}`);
+        console.log(`📚 Swagger docs available at http://localhost:${PORT}/api-docs`);
+    });
 });
