@@ -163,7 +163,7 @@ router.delete("/group/:groupId", verifyToken, async (req: AuthRequest, res) => {
     try {
         const userId = req.user!.userId;
         const groupId = req.params.groupId as string;
-        
+
         if (!groupId) {
             return res.status(400).json({ error: "Group ID is required" });
         }
